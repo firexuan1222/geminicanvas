@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solana 机制可视化实验室</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes pulse-fast {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        .poh-hash {
+            animation: pulse-fast 0.4s infinite;
+        }
+        .block-enter {
+            animation: slideIn 0.5s ease-out forwards;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .blockchain-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        .blockchain-container::-webkit-scrollbar-thumb {
+            background: #4ade80;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white min-h-screen font-sans">
+
+    <!-- 导航栏 -->
+    <nav class="border-b border-slate-700 p-4 bg-slate-800">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold bg-gradient-to-r from-green-400 to-purple-500 bg-clip-text text-transparent">
+                Solana Viz Lab
+            </h1>
+            <div class="flex items-center space-x-4">
+                <span id="status-badge" class="px-3 py-1 rounded-full text-xs bg-green-500/20 text-green-400 border border-green-500/50">
+                    主网运行中
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- 左侧：控制面板与统计 -->
+        <div class="space-y-6">
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
+                <h2 class="text-xl font-semibold mb-4 flex items-center">
+                    <span class="mr-2"></span> 实时统计
+                </h2>
+                <div class="space-y-4">
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">当前槽位 (Slot):</span>
+                        <span id="slot-count" class="font-mono text-purple-400">0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">TPS (模拟):</span>
+                        <span id="tps-count" class="font-mono text-green-400">2,450</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">PoH 哈希速率:</span>
+                        <span class="font-mono text-blue-400">~400ms/slot</span>
+                    </div>
+                </div>
+                <button id="tx-btn" class="w-full mt-6 bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded-xl transition-all active:scale-95 shadow-lg shadow-purple-900/20">
+                    发送模拟交易
+                </button>
+            </div>
+
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+                <h3 class="font-semibold text-slate-300 mb-2">什么是 Proof of History?</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                    Solana 使用历史证明 (PoH) 作为数字时钟。它通过对上一个输出进行持续哈希，证明了事件发生的时间顺序，而不需要验证者之间频繁通信。
+                </p>
+            </div>
+        </div>
+
+        <!-- 右侧：可视化核心 -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- PoH 时钟模拟 -->
+            <div class="bg-black/40 p-6 rounded-2xl border border-slate-700 overflow-hidden relative">
+                <h2 class="text-lg font-semibold mb-4 text-slate-300">PoH 序列 (历史证明时钟)</h2>
+                <div id="poh-stream" class="flex space-x-2 font-mono text-[10px] text-green-500/70">
+                    <!-- 动态插入哈希 -->
+                </div>
+                <div class="absolute top-0 right-0 h-full w-20 bg-gradient-to-l from-black/80 to-transparent pointer-events-none"></div>
+            </div>
+
+            <!-- 区块链视图 -->
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+                <h2 class="text-lg font-semibold mb-4 flex items-center">
+                    <span class="mr-2"></span> 账本链 (Ledger)
+                </h2>
+                <div id="blockchain" class="blockchain-container flex space-x-4 overflow-x-auto pb-4 min-h-[180px] items-end">
+                    <!-- 区块将在这里生成 -->
+                </div>
+            </div>
+
+    
